@@ -5,6 +5,7 @@ There is some gnarly terminology in here. I'm not happy with what I have yet.
 * `Actor` - a person, application, role or group of same.
 * `Secret` - namespaced, named and versioned data intended to be known to only some `actors`, and unknown to others.
   May refer to the data in unencrypted form (the `cleartext secret`) or encrypted form (the `encrypted secret`).
+* `Secret identity` - a tuple of the namespace, name and version of a `secret`.
 * `Secret namespace` - container for a set of secrets that are all intended for disclosure to the same `actors`.
   Namespaces provide granularity for access control when writing (and possibly reading) secret ciphertext.
 * `Secret name` - the identity of a single secret in a namespace, unique within that namespace.
