@@ -16,10 +16,13 @@ key = vault.lock(secret)
 
 =begin
   This might have gotten put in a bucket called "net.auto-h.config-vault:certmeister:config:1",
-  in which the object name is taken from the Key.identity (or something).
+  in which the object name is the generated encrypted secret uuid.
 
   This allows each object to be a secret, which allows us to encrypt with a new key without
   mutating existing data.
+
+  However, the downside is that publishers need broad rights, because they need to be allowed to
+  create buckets!
 =end
 
 # Consumer (e.g. application)
