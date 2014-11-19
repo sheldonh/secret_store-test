@@ -47,6 +47,12 @@ to use in the high-level API. Some ideas:
 * store: hide, keep, protect, lock
 * retrieve: reveal, disclose, divulge, unlock
 
+### Panic
+
+With the current design, when your configuration changes because of environmental pressure (rather than because new code needs new config),
+you have to get the new secret key out into the wild. That doesn't feel right. Need to sleep on it, but this suggests that the idea of
+taking key generation inside the vault's lock function might be going one step too far.
+
 ## Storage
 
 Not sure where to express this, but the index path to an encrypted secret will be:
