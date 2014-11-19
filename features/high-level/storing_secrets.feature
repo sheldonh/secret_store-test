@@ -7,10 +7,9 @@ Feature: High level API for locking secrets
   Scenario: Lock a secret
 
     Given I have a cleartext secret
-    And I have a secret namespace
-    And I have a secret name
-    And I have a secret version
-    When I lock the secret
+    And I have a secret identity
+    And I have a vault
+    When I lock the secret in the vault
     Then I get back the secret key
     And the encrypted secret has been stored somewhere
     And the secret key can unlock the encrypted secret
@@ -19,11 +18,10 @@ Feature: High level API for unlocking secrets
 
   Scenario: Unlock a secret
 
-    Given an encrypted secret has been stored somewhere
-    And I have the secret namespace
-    And I have the secret name
-    And I have the secret version
-    And I have the secret key
+    Given I have a vault
+    And I have a secret key
+    And I have a secret identity
+    And the secret key was used to lock a secret with that identity in the vault
     When I unlock the secret
     Then I get back the cleartext secret
 
