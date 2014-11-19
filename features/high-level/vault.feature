@@ -4,7 +4,7 @@ Feature: High level API (vault)
   I want to lock a secret and get a secret key
   So that I can configure an application to unlock the secret.
 
-  Scenario: Locking a secret
+  Scenario: Locking a secret yields a key
 
     Given I have a cleartext secret
     And I have a secret identity
