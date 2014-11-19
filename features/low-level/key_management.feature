@@ -6,8 +6,6 @@ Feature: Key management
   So that I can encrypt each application's secrets independently
 
   Scenario Outline: Keys are usable
-    # XXX Do I care about the cipher, or just the key size?
-    # XXX Can I abstract the symmetric/asymmetric property of the cipher?
 
     Given a symmetric cipher
     When I request a content encryption key for the cipher
@@ -38,7 +36,6 @@ Feature: Key management
     Then the two keys have different identities
 
   Scenario: Keys expose their age
-    # XXX Should keys expose date of issue or expiry date?
 
     Given a symmetric cipher
     When I request a content encryption key for the cipher
