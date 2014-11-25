@@ -57,6 +57,8 @@ Feature: Secure config provisioning
 
     # This use case is demanding. It wants the key as input to the securing function, or it wants
     # every config update to include updating the key that existing instances will restart with.
+    # Or it makes the extremely bold claim that applications never get restarted; that's probably
+    # too cloud.
 
     Given I have a version 1 config
     And the config has been secured
