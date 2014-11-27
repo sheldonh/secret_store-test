@@ -1,30 +1,27 @@
-Feature: Secure config provisioning
+Feature: Secret provisioning
 
   As a developer
-  I want to configure cloud applications securely
-  Without baking their secrets into built images.
+  I want to launch my apps in a Docker cloud
+  Without baking their secrets into Docker images.
 
   Scenario: Deploying a brand new application
 
-    Given I have a config
-    When I secure the config
-    And I start the app with the config key
-    Then the app gets the config
+    Given I have a secret
+    And I have a vault
+    When I put the secret in the vault
+    Then I get an access card
+    And my app can get the secret from the vault with that access card
 
   Scenario: Partitioning applications from each other
 
-    # Fuck, that's a lot of words.
-
-    Given I have a config for an app called gamma
-    And I have a config for an app called epsilon
-    When I secure the gamma config
-    And I secure the epsilon config
-    And I start the gamma app with the gamma config key
-    And I start the epsilon app with the epsilon config key
-    Then the gamma app gets the gamma config
-    And the epsilon app gets the epsilon config
-    And the gamma app can't get the epsilon config
-    And the epsilon app can't get the gamma config
+    Given I have two secrets
+    And I have a vault
+    When I put both secrets in the vault
+    Then I get a separate access card for each secret
+    And each of my apps can get its secret from the vault with the right access card
+    And neither of my apps can get the other app's secret from the vaule with the wrong access card
+    
+    # WIP up to here with rewrite
 
   Scenario: Applying different configuration in different execution environments
 
