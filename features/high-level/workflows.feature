@@ -14,75 +14,88 @@ Feature: Secret provisioning
 
   Scenario: Partitioning applications from each other
 
-    Given I have two secrets
-    And I have a vault
-    When I put both secrets in the vault
-    Then I get a separate access card for each secret
-    And each of my apps can get its secret from the vault with the right access card
-    And neither of my apps can get the other app's secret from the vaule with the wrong access card
-    
-    # WIP up to here with rewrite
+    Given I have secrets secured in a vault:
+      | nickname | namespace       | name              | value     |
+      | secret1  | app1            | dbpass            | secretXYZ |
+      | secret2  | app2            | passphrase        | password1 |
+    When I try to use the access card for "secret1" to access "secret2"
+    Then I get an error
 
   Scenario: Applying different configuration in different execution environments
 
-    # The partition could derive from the environment or the key. Should I nail that down?
+    Given I have secrets secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | prod     | app1:production | dbpass            | jjMXnf28ympt08u5 |
+      | staging  | app1:staging    | dbpass            | insecure         |
+    When I try to use the access card for "prod" to access "staging"
+    Then I get an error
 
-    Given I have a staging config
-    And I have a production config
-    When I secure the staging config
-    And I secure the production config
-    And I start the app in the staging environment with the staging config key
-    And I start the app in the production environment with the production config key
-    Then the app in the staging environment gets the staging config
-    And the app in the production environment gets the production config
-    And the app in the staging environment can't get the production config
-    And the app in the production environment can't get the staging config
+  Scenario: Updating a secret
 
-  Scenario: Upgrading an application to an incompatible config version
+    # TODO Come up with a better name than "updating", that reflects preservation of existing value
 
-    Given I have a version 1 config
-    And the config has been secured
-    And a running app instance has the key for the version 1 config
-    And I have a version 2 config
-    When I secure the version 2 config
-    And I restart the app instance with the version 1 config key
-    And I start a new app instance with the version 2 config key
-    Then the old app instance still gets the version 1 config
-    And the new app instance gets the version 2 config
+    Given I have a secret secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | dbpass:staging    | insecure         |
+    When I update the secret in the vault:
+      | nickname | namespace       | name              | value            |
+      | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
+    Then I get an access card for "new"
+    And the access card for "new" has access to "new"
+    And the access card for "old" still has access to "old"
 
-  Scenario: Updating the configuration of an application without a config version change
+  Scenario: Deleting an old copy of a secret
 
-    # Here, we make the bold claim that applications cannot be restarted with an existing key
-    # and expect to get an updated configuration.
+    Given I have secrets secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | dbpass:staging    | insecure         |
+      | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
+    When I invalidate the access card for "old"
+    Then the access card for "old" gets an error
+    And the access card for "new" still has access to "new"
 
-    Given I have a version 1 config
-    And the config has been secured
-    And a running app instance has the key
-    And I have an updated version 1 config
-    When I secure the updated version 1 config
-    And I restart the app instance
-    And I start a new app instance
-    Then the old app instance still gets the old version 1 config
-    And the new app instance also has updated version 1 config
+  Scenario: Replacing a secret
+
+    Given I have a secret secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | dbpass:staging    | insecure         |
+    When I replace the secret in the vault:
+      | nickname | namespace       | name              | value            |
+      | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
+    And the access card for "new" has access to "new"
+    Then the access card for "old" gets an error
+
+  Scenario: Introducing a secret update that is not backward compatible
+
+    Given I have a secret secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | cert              | pem:...          |
+    When I update the secret in the vault:
+      | nickname | namespace       | name              | value            |
+      | new      | app1            | cert              | pfx:...          |
+    And the access card for "new" has access to "new"
+    And the access card for "old" still has access to "old"
 
   Scenario: Rotating a key that is not yet suspected of compromise
 
-    Given I have a config
-    And the config has been secured
-    And a running app instance has the key
-    When I rotate the key of the config without suspicion of compromise
-    And I restart the app instance with the old key
-    And I start a new app instance with the new key
-    Then the old app instance has the config
-    And the new app instance also has the config
+    Given I have a secret secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | dbpass:staging    | insecure         |
+    When I update the secret in the vault:
+      | nickname | namespace       | name              | value            |
+      | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
+    And I invalidate the access card for "old"
+    Then the access card for "old" gets an error
+    And the access card for "new" still has access to "new"
 
   Scenario: Dealing with a lost or stolen key
 
-    Given I have a config
-    And the config has been secured
-    And a running app instance has the key
-    When I rotate the key of the config on suspicion of compromise
-    And I restart the app instance with the old key
-    And I start a new app instance with the new key
-    Then the old app instance does not get the config
-    And the new app instance gets the config
+    Given I have a secret secured in a vault:
+      | nickname | namespace       | name              | value            |
+      | old      | app1            | dbpass:staging    | insecure         |
+    When I replace the secret in the vault:
+      | nickname | namespace       | name              | value            |
+      | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
+    And the access card for "new" has access to "new"
+    Then the access card for "old" gets an error
+
