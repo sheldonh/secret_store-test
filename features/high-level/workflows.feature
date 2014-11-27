@@ -52,10 +52,8 @@ Feature: Secret provisioning
 
   Scenario: Updating the configuration of an application without a config version change
 
-    # This use case is demanding. It wants the key as input to the securing function, or it wants
-    # every config update to include updating the key that existing instances will restart with.
-    # Or it makes the extremely bold claim that applications never get restarted; that's probably
-    # too cloud.
+    # Here, we make the bold claim that applications cannot be restarted with an existing key
+    # and expect to get an updated configuration.
 
     Given I have a version 1 config
     And the config has been secured
@@ -63,8 +61,8 @@ Feature: Secret provisioning
     And I have an updated version 1 config
     When I secure the updated version 1 config
     And I restart the app instance
-    And I start a new app instanc
-    Then the old app instance has the updated version 1 config
+    And I start a new app instance
+    Then the old app instance still gets the old version 1 config
     And the new app instance also has updated version 1 config
 
   Scenario: Rotating a key that is not yet suspected of compromise
