@@ -4,13 +4,14 @@ There is some gnarly terminology in here. I'm not happy with what I have yet.
 
 * `Vault` - an abstraction over a storage provider and cryptographic provider.
   This is the primary abstraction of the high-level API.
-  `Actors` use it to `lock` and `unlock` `secrets`, which it does by handling persistence, encryption, decryption and encoding opaquely.
-  * `Lock` - the `vault` function of encrypting and storing a secret.
-    It returns a `secret key`.
-  * `Unlock` - the `vault` function of retrieving and decrypting a secret.
+  `Actors` use it to `secure` and `access` `secrets`, which it does by handling persistence, encryption, decryption and encoding opaquely.
+  * `Secure` - the `vault` function of encrypting and storing a `secret`.
+    It returns an `access card`.
+  * `Access` - the `vault` function of retrieving and decrypting a `secret`.
     It returns the `cleartext secret`.
 * `Actor` - a person, application, role or group of same.
-* `Secret` - namespaced, named data intended to be known to only some `actors`, and unknown to others.
+* `Secret` - uniquely identified data intended to be known to only some `actors`, and unknown to others.
+  Has a `secret identity`.
   May refer to the data in unencrypted form (the `cleartext secret`) or encrypted form (the `encrypted secret`).
 * `Secret identity` - a tuple of the namespace and name of a `secret`:
   * `Secret namespace` - container for a set of secrets that are all intended for disclosure to the same `actors`.
@@ -18,7 +19,7 @@ There is some gnarly terminology in here. I'm not happy with what I have yet.
   * `Secret name` - the identity of a single secret in a namespace, unique within that namespace.
     Names allow a single access control policy to apply to multiple secrets.
 * `Cleartext secret` - the data of a `secret` in unencrypted form as intended to be known by participating actors.
-* `Encrypted secret` - a package of data required by an `actor` in posession of the `secret key` to derive the `secret cleartext`.
+* `Encrypted secret` - a package of data required by an `actor` in posession of the `access card` to derive the `secret cleartext`.
   May include not only `ciphertext`, but also metadata required to initialize the decryption function.
   In terms of the Cryptographic Message Syntax, this is the [enveloped-data](http://tools.ietf.org/html/rfc5652#section-6) content type.
 * `Access card` - the package of data that must be known to an `actor` in posession of an `encrypted secret` to derive the `secret cleartext`.
@@ -39,16 +40,10 @@ There is some gnarly terminology in here. I'm not happy with what I have yet.
 
 It might be a mistake to try to abstract CMS language here. I should introduce the idea of enveloped data into the lexicon.
 
-To avoid lexical clash between the storage back-end and the high-level API, I'm looking for alternative words for "store" and "retrieve"
-to use in the high-level API. Some ideas:
-
-* store: hide, keep, protect, lock
-* retrieve: reveal, disclose, divulge, unlock
-
 With the current design, when your configuration changes because of environmental pressure (rather than because new code needs new config),
-you have to get the new secret key out into the wild. Ernst and I don't feel that is is too much of a burden. At the point where you
+you have to get the new access card out into the wild. Ernst and I don't feel that is is too much of a burden. At the point where you
 want live processes to respond to configuration changes, you'll need some mechanism for notification of change; since you're already talking
-to those processes for this purpose, it's not a stretch to demand that one of the things you say to them is "here is a new key".
+to those processes for this purpose, it's not a stretch to demand that one of the things you say to them is "here is a new access card".
 
 ## Storage
 

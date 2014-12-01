@@ -8,7 +8,7 @@ Feature: Secret provisioning
 
     Given I have a secret
     And I have a vault
-    When I put the secret in the vault
+    When I secure the secret in the vault
     Then I get an access card
     And my app can get the secret from the vault with that access card
 
@@ -35,7 +35,7 @@ Feature: Secret provisioning
     Given I have a secret secured in a vault:
       | nickname | namespace       | name              | value            |
       | old      | app1            | dbpass:staging    | insecure         |
-    When I replace the secret in the vault:
+    When I secure the secret in the vault with the replacement option:
       | nickname | namespace       | name              | value            |
       | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
     Then the access card for "new" has access to "new"
@@ -48,7 +48,7 @@ Feature: Secret provisioning
     Given I have a secret secured in a vault:
       | nickname | namespace       | name              | value            |
       | old      | app1            | cert              | pem:...          |
-    When I update the secret in the vault:
+    When I secure the secret in the vault:
       | nickname | namespace       | name              | value            |
       | new      | app1            | cert              | pfx:...          |
     Then the access card for "new" has access to "new"
@@ -69,7 +69,7 @@ Feature: Secret provisioning
     Given I have a secret secured in a vault:
       | nickname | namespace       | name              | value            |
       | old      | app1            | dbpass:staging    | insecure         |
-    When I update the secret in the vault:
+    When I secure the secret in the vault with the replacement option:
       | nickname | namespace       | name              | value            |
       | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
     And I make sure all consumers are using the access card for "new"
@@ -82,7 +82,7 @@ Feature: Secret provisioning
     Given I have a secret secured in a vault:
       | nickname | namespace       | name              | value            |
       | old      | app1            | dbpass:staging    | insecure         |
-    When I replace the secret in the vault:
+    When I secure the secret in the vault with the replacement option:
       | nickname | namespace       | name              | value            |
       | new      | app1            | dbpass:staging    | mxpNge3vCiyynmqt |
     And I don't bother to wait for all consumers to be using the access card for "new"
